@@ -63,3 +63,87 @@ document.getElementById("lang").addEventListener("click", () => {
 });
 document.getElementById("year").textContent = new Date().getFullYear();
 render();
+
+// ---------- quote request: email or the form (saved straight into the GGE portal)
+const RFQ_SERVICES = [
+  ["construction", "المقاولات والأعمال المدنية", "Contracting & civil works"],
+  ["hvac", "التكييف والأنظمة الميكانيكية", "HVAC & mechanical"],
+  ["electrical", "الكهرباء والتحكم وأجهزة القياس", "Electrical, controls & instrumentation"],
+  ["plumbing", "السباكة ومكافحة الحريق", "Plumbing & fire protection"],
+  ["oilgas", "دعم مشاريع النفط والغاز", "Oil & gas project support"],
+  ["solar", "الطاقة الشمسية وتأجير المعدات", "Solar & equipment rental"],
+  ["cabins", "الكبائن والمكاتب المتنقلة", "Portable cabins & offices"],
+  ["other", "أخرى", "Other"],
+];
+const RFQ_URLS = ["https://gge-api.long-heart-f38e.workers.dev/functions/v1/api", "https://lnmnuffitbnvnkejgbin.supabase.co/functions/v1/api"];
+const RFQ_KEY = "sb_publishable_8DWgomPOe01dp-dMYvtbhA_-2TeVvTK";
+const RFQ_ERR = {
+  inq_fields: ["اكتب اسم الشركة واسم الشخص المسؤول.", "Enter the company and contact name."],
+  inq_phone: ["اكتب رقم جوال صحيح.", "Enter a valid mobile number."],
+  inq_email: ["اكتب بريدًا إلكترونيًا صحيحًا.", "Enter a valid email address."],
+  inq_details: ["اكتب تفاصيل طلبك.", "Describe what you need."],
+  inq_size: ["حجم كل ملف لازم يكون 5 ميقا أو أقل.", "Each file must be 5 MB or smaller."],
+  inq_type: ["المرفقات المسموحة: PDF أو صور أو Excel أو Word.", "Attach PDF, image, Excel or Word files."],
+  inq_rate: ["وصلنا عدد كبير من الطلبات منك اليوم. تواصل معنا على sales@gge.com.sa.", "Too many requests today. Please email sales@gge.com.sa."],
+  net: ["تعذّر الإرسال. تأكد من الاتصال وحاول مرة ثانية، أو راسلنا على sales@gge.com.sa.", "Couldn't send. Check your connection and try again, or email sales@gge.com.sa."],
+};
+const dlg = document.getElementById("rfq");
+const rfqForm = document.getElementById("rfq-form");
+let rfqOpenedAt = 0;
+const rfqStep = (name) => dlg.querySelectorAll("[data-step]").forEach((el) => (el.hidden = el.dataset.step !== name));
+function rfqFill() {
+  const ar = lang === "ar";
+  const sel = document.getElementById("rfq-service"), v = sel.value;
+  sel.innerHTML = `<option value="">${ar ? "اختر الخدمة" : "Choose a service"}</option>` + RFQ_SERVICES.map(([k, a, e]) => `<option value="${k}">${ar ? a : e}</option>`).join("");
+  sel.value = v;
+  const ta = rfqForm.details; ta.placeholder = ta.dataset[ar ? "phAr" : "phEn"];
+}
+function rfqError(code) {
+  const el = document.getElementById("rfq-err"), m = RFQ_ERR[code] || RFQ_ERR.net;
+  el.textContent = m[lang === "ar" ? 0 : 1]; el.hidden = false;
+}
+function openRfq(e) {
+  if (!dlg || typeof dlg.showModal !== "function") return; // old browsers keep the mailto link
+  e.preventDefault();
+  rfqFill(); rfqStep("choose"); document.getElementById("rfq-err").hidden = true;
+  dlg.showModal(); rfqOpenedAt = Date.now();
+}
+document.querySelectorAll("[data-rfq]").forEach((a) => a.addEventListener("click", openRfq));
+dlg.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => dlg.close()));
+dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+dlg.querySelector("[data-go-form]").addEventListener("click", () => { rfqStep("form"); rfqForm.company.focus(); });
+dlg.querySelector("[data-back]").addEventListener("click", () => rfqStep("choose"));
+document.getElementById("lang").addEventListener("click", rfqFill);
+
+rfqForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById("rfq-err"); errEl.hidden = true;
+  const f = rfqForm;
+  if (f.company.value.trim().length < 2 || f.contact_name.value.trim().length < 2) return rfqError("inq_fields");
+  if (!/^\+?\d{9,15}$/.test(f.phone.value.replace(/[\s-]/g, ""))) return rfqError("inq_phone");
+  if (!f.email.checkValidity() || !f.email.value) return rfqError("inq_email");
+  if (!f.service.value) { f.service.focus(); return; }
+  if (f.details.value.trim().length < 10) return rfqError("inq_details");
+  const files = [...f.files.files].slice(0, 3);
+  if (files.some((x) => x.size > 5 * 1024 * 1024)) return rfqError("inq_size");
+  const data = new FormData();
+  for (const k of ["company", "contact_name", "email", "service", "city", "details", "website"]) data.append(k, f[k].value.trim());
+  data.append("phone", f.phone.value.replace(/[\s-]/g, ""));
+  data.append("lang", lang);
+  data.append("elapsed", String(Date.now() - rfqOpenedAt));
+  files.forEach((x) => data.append("files", x));
+  const btn = document.getElementById("rfq-send"); btn.disabled = true; btn.classList.add("busy");
+  try {
+    let res = null;
+    for (const url of RFQ_URLS) {
+      try { res = await fetch(url, { method: "POST", headers: { apikey: RFQ_KEY }, body: data }); if (res.status !== 403) break; }
+      catch (err) { res = null; }
+    }
+    if (!res) throw new Error("net");
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) return rfqError(out.code);
+    document.getElementById("rfq-no").textContent = out.number || "";
+    f.reset(); rfqStep("done");
+  } catch (err) { rfqError("net"); }
+  finally { btn.disabled = false; btn.classList.remove("busy"); }
+});
