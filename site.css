@@ -1,4 +1,4 @@
-/* test *//* GGE — company site. Tokens follow the GGE identity: forest green, leaf green, steel grey, white,
+/* GGE — company site. Tokens follow the GGE identity: forest green, leaf green, steel grey, white,
    and the letterhead's slanted bars as the one recurring shape. */
 :root{
   --forest:#1A3829; --forest-2:#12291E; --forest-3:#24493A;
@@ -60,7 +60,7 @@ html[lang=en] .lead{font-size:18px}
 .hero-shot{margin:0;position:relative;aspect-ratio:4/4.3;max-height:560px}
 .hero-shot img{width:100%;height:100%;object-fit:cover;clip-path:polygon(var(--slant) 0,100% 0,calc(100% - var(--slant)) 100%,0 100%)}
 /* the identity's two bars, large, under the hero */
-.bars{position:relative;z-index:1;display:grid;gap:12px;margin-top:44px;padding-bottom:0}
+.bars{position:relative;overflow:hidden;padding-inline:0 34px;z-index:1;display:grid;gap:12px;margin-top:44px;padding-bottom:0}
 .bars i{display:block;height:34px;width:min(62vw,820px);margin-inline-start:-34px;clip-path:polygon(34px 0,100% 0,calc(100% - 34px) 100%,0 100%);transform-origin:left;animation:barIn .9s cubic-bezier(.2,.7,.2,1) both}
 .bars i:nth-child(1){background:#fff;animation-delay:.1s}
 html[dir=rtl] .bars i{transform-origin:right}
@@ -211,3 +211,47 @@ html[dir=rtl] .ci-txt b{text-align:right}
 .contact-grid{grid-template-columns:1fr 1.1fr}
 @media (max-width:900px){.contact-grid{grid-template-columns:1fr}}
 @media (max-width:560px){.contact-list{grid-template-columns:1fr}}
+
+/* quote request dialog */
+.rfq{border:0;padding:0;border-radius:18px;width:min(720px,100% - 24px);max-height:calc(100dvh - 24px);background:#fff;color:var(--ink);box-shadow:0 30px 80px rgba(10,30,20,.35);overflow:auto}
+.rfq::backdrop{background:rgba(10,26,18,.6);backdrop-filter:blur(3px)}
+.rfq[open]{animation:rfqIn .25s ease}
+@keyframes rfqIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.rfq-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--forest);color:#fff;padding:18px 24px;overflow:hidden}
+.rfq-top::after{content:"";position:absolute;bottom:0;inset-inline-start:0;width:150px;height:6px;background:var(--leaf);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.rfq-top h2{font-size:22px;margin:0}
+.rfq-x{background:rgba(255,255,255,.12);border:0;color:#fff;width:38px;height:38px;border-radius:50%;font-size:24px;line-height:1}
+.rfq-x:hover{background:rgba(255,255,255,.22)}
+.rfq-body{padding:24px}
+.rfq-lead{margin:0 0 18px;color:var(--muted)}
+.rfq-choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rfq-choice{display:flex;align-items:center;gap:16px;text-align:start;padding:20px;border-radius:14px;border:2px solid #E1E8E2;background:var(--mist);font:inherit;color:inherit;cursor:pointer;transition:border-color .2s,background .2s}
+.rfq-choice:hover{border-color:var(--leaf);background:#fff}
+.rfq-choice b{display:block;font-size:17px;margin-bottom:2px}
+.rfq-choice small{display:block;color:var(--muted);font-size:14px;line-height:1.6}
+.rfq-choice .ci-ico svg{fill:var(--forest-2)}
+.rfq-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.rfq-grid label{display:grid;gap:6px;font-size:14px;font-weight:500;color:var(--ink)}
+.rfq-grid label.full{grid-column:1/-1}
+.rfq-grid input,.rfq-grid select,.rfq-grid textarea{font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1.5px solid #CDD8CF;border-radius:10px;padding:11px 13px;width:100%}
+.rfq-grid textarea{resize:vertical;min-height:120px;line-height:1.7}
+.rfq-grid input:focus,.rfq-grid select:focus,.rfq-grid textarea:focus{outline:none;border-color:var(--leaf);box-shadow:0 0 0 3px rgba(112,187,46,.25)}
+.rfq-grid .file input{padding:9px;background:var(--mist)}
+.rfq-grid .file small{font-weight:400;color:var(--muted);font-size:13px}
+.rfq-grid .hp{position:absolute;inset-inline-start:-9999px;width:1px;height:1px;overflow:hidden}
+.rfq-err{margin:16px 0 0;padding:12px 14px;border-radius:10px;background:#FBE6E3;color:#A3322A;font-size:15px}
+.rfq-actions{display:flex;justify-content:space-between;gap:12px;margin-top:20px}
+.btn-line{border-color:#CDD8CF;color:var(--forest);background:#fff}
+.btn-line:hover{border-color:var(--forest)}
+.btn.busy{opacity:.7;pointer-events:none}
+.rfq-note{margin:12px 0 0;font-size:13px;color:var(--muted);text-align:center}
+.rfq-done{text-align:center;padding:16px 0 6px;display:grid;justify-items:center;gap:6px}
+.rfq-done h3{font-size:24px;margin:8px 0 0}
+.rfq-done p{margin:0;color:var(--muted)}
+.rfq-done b{font-family:var(--en);color:var(--forest);font-size:18px}
+.rfq-done .btn{margin-top:16px;min-width:140px}
+.done-mark{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--leaf);color:var(--forest-2)}
+.done-mark svg{width:34px;height:34px}
+@media (max-width:600px){.rfq-choices,.rfq-grid{grid-template-columns:1fr}.rfq-body{padding:18px}.rfq-actions .btn{flex:1}}
+.rfq [hidden]{display:none!important}
+html,body{overflow-x:clip}
