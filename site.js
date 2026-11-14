@@ -45,7 +45,7 @@ function render() {
   btn.textContent = ar ? "English" : "العربية";
   btn.lang = ar ? "en" : "ar";
   btn.setAttribute("aria-label", ar ? "Switch to English" : "التبديل إلى العربية");
-  document.title = ar ? "GGE | عين الخضراء الخليجية — Gulf Green Eye Est." : "GGE | Gulf Green Eye Est. — Contracting, MEP & portable cabins";
+  document.title = ar ? "GGE | عين الخضراء الخليجية — Gulf Green Eye Co." : "GGE | Gulf Green Eye Co. — Contracting, MEP & portable cabins";
 
   document.getElementById("svc").innerHTML = SERVICES.map((s) => {
     const [h, p] = s[lang];
