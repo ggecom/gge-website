@@ -37,15 +37,17 @@ html[lang=en] .btn{font-size:15px}
 .btn-forest:hover{background:var(--forest-3)}
 
 /* ---------- header ---------- */
-.top{position:sticky;top:0;z-index:50;background:var(--forest);color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
+.top{position:sticky;top:0;z-index:50;background:var(--white);color:var(--forest);box-shadow:0 1px 0 #E3EAE1}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:4px;background:linear-gradient(90deg,var(--forest) 0 70%,var(--leaf) 70% 100%);pointer-events:none}
+html[lang=en] .top::after{background:linear-gradient(270deg,var(--forest) 0 70%,var(--leaf) 70% 100%)}
 .bar{display:flex;align-items:center;gap:28px;min-height:76px}
 .brand img{height:50px;width:auto}
 .nav{display:flex;gap:26px;margin-inline-start:auto;font-size:15px;font-weight:500}
-.nav a{color:#D7E4DA;padding:6px 0;border-bottom:2px solid transparent}
-.nav a:hover{color:#fff;border-bottom-color:var(--leaf)}
+.nav a{color:var(--forest-3);padding:6px 0;border-bottom:2px solid transparent}
+.nav a:hover{color:var(--forest-2);border-bottom-color:var(--leaf)}
 .tools{display:flex;align-items:center;gap:12px}
-.lang{background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;min-height:40px;padding:0 16px;font-size:14px}
-.lang:hover{border-color:#fff}
+.lang{background:none;border:1px solid rgba(26,56,41,.35);color:var(--forest);border-radius:999px;min-height:40px;padding:0 16px;font-size:14px}
+.lang:hover{border-color:var(--forest)}
 html[lang=en] .lang{font-family:var(--ar)}
 html[lang=ar] .lang{font-family:var(--en)}
 
